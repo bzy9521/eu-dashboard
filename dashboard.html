@@ -5,43 +5,74 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>欧洲团队数据仪表盘</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,"Microsoft YaHei","PingFang SC",sans-serif;background:#f0f2f5;color:#333;font-size:13px}
-.header{background:linear-gradient(135deg,#1f4e79,#2e6aad);color:#fff;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.header h1{font-size:18px;font-weight:600}
-.header p{font-size:11px;opacity:.7}
-.container{max-width:1500px;margin:0 auto;padding:16px}
-.kpi-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-.kpi{background:#fff;border-radius:8px;padding:14px 18px;flex:1;min-width:130px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
-.kpi .l{font-size:10px;color:#888;margin-bottom:3px}
-.kpi .v{font-size:24px;font-weight:700}
-.kpi .s{font-size:10px;margin-top:3px}
-.danger{color:#e74c3c}.warn{color:#f39c12}.ok{color:#27ae60}
-.section{background:#fff;border-radius:8px;padding:14px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
-.section h2{font-size:13px;font-weight:600;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:6px}
-.tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
-.tab{padding:5px 12px;border-radius:4px;cursor:pointer;font-size:12px;border:1px solid #ddd;background:#fff;transition:all .15s}
-.tab:hover{background:#f0f7ff}.tab.active{background:#1f4e79;color:#fff;border-color:#1f4e79}
-.filters{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
-.filters input,.filters select{padding:5px 8px;border:1px solid #ddd;border-radius:4px;font-size:12px}
-.filters input{width:160px}
-.badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600}
-.bd{background:#fde8e8;color:#c0392b}.bw{background:#fef9e7;color:#e67e22}.bo{background:#e8f8f0;color:#27ae60}.bdead{background:#f0f0f0;color:#888}
-table{width:100%;border-collapse:collapse;font-size:11px}
-th{background:#f8f9fb;color:#555;font-weight:600;padding:6px 8px;text-align:left;border-bottom:2px solid #e8eef5;position:sticky;top:0;z-index:1}
-td{padding:5px 8px;border-bottom:1px solid #f0f2f5;white-space:nowrap}
-tr:hover{background:#f8faff}
-.stock0{color:#c0392b;font-weight:700}
-.product-row{background:#f0f5ff;font-weight:600}
-.product-row td{border-bottom:2px solid #c5d9f0;padding:8px 8px;font-size:12px}
-.collapse-btn{cursor:pointer;user-select:none;font-size:14px;margin-right:4px}
-.collapse-btn:hover{color:#1f4e79}
-.tw{overflow-x:auto;max-height:620px;overflow-y:auto}
-.count{font-size:10px;color:#888;margin-left:6px}
-.summary-bar{background:linear-gradient(135deg,#e8f0fe,#d0e2f7);border:2px solid #4a90d9;border-radius:8px;padding:10px 18px;margin-bottom:12px;font-size:13px;display:flex;gap:24px;flex-wrap:wrap;align-items:center;box-shadow:0 2px 6px rgba(74,144,217,.15)}
-.summary-bar span{color:#333;white-space:nowrap}
-.summary-bar strong{color:#1f4e79;font-size:15px}
-.filter-label{font-size:11px;color:#666;white-space:nowrap}
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--surface2:#222633;--surface3:#2a2f3e;
+  --border:#2e3446;--text:#e4e7ed;--text2:#9ca3b4;--text3:#6b7280;
+  --accent:#6366f1;--accent2:#818cf8;--accent-bg:rgba(99,102,241,.12);
+  --green:#22c55e;--green-bg:rgba(34,197,94,.12);
+  --orange:#f59e0b;--orange-bg:rgba(245,158,11,.12);
+  --red:#ef4444;--red-bg:rgba(239,68,68,.12);
+  --gray:#6b7280;--gray-bg:rgba(107,114,128,.12);
+}
+body{font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased}
+.header{background:linear-gradient(135deg,#141722 0%,#1e2235 50%,#1a1635 100%);color:#fff;padding:20px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border-bottom:1px solid var(--border)}
+.header h1{font-size:20px;font-weight:700;letter-spacing:-.3px;background:linear-gradient(135deg,#e4e7ed,#c7cce0);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header p{font-size:11px;color:var(--text3)}
+.container{max-width:1540px;margin:0 auto;padding:20px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;position:relative;overflow:hidden;transition:transform .15s,border-color .15s}
+.kpi:hover{transform:translateY(-2px);border-color:var(--accent)}
+.kpi .l{font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;font-weight:500}
+.kpi .v{font-size:28px;font-weight:800;letter-spacing:-.5px;color:var(--text)}
+.kpi .s{font-size:11px;margin-top:6px;font-weight:500}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0}
+.kpi.de-kpi::before{background:linear-gradient(90deg,#6366f1,#818cf8)}
+.kpi.uk-kpi::before{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.danger{color:var(--red)}.warn{color:var(--orange)}.ok{color:var(--green)}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+.section h2{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text2)}
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tab{padding:7px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;border:1px solid var(--border);background:var(--surface2);color:var(--text2);transition:all .2s}
+.tab:hover{background:var(--surface3);color:var(--text);border-color:var(--accent)}
+.tab.active{background:linear-gradient(135deg,var(--accent),#7c3aed);color:#fff;border-color:transparent;box-shadow:0 2px 12px rgba(99,102,241,.3)}
+.filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filters input,.filters select{padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--surface2);color:var(--text);transition:border-color .15s;font-family:inherit}
+.filters input:focus,.filters select:focus{outline:none;border-color:var(--accent)}
+.filters input{width:180px}
+.filters input::placeholder{color:var(--text3)}
+.filters select option{background:var(--surface2);color:var(--text)}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;letter-spacing:.2px}
+.bd{background:var(--red-bg);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.bw{background:var(--orange-bg);color:var(--orange);border:1px solid rgba(245,158,11,.25)}
+.bo{background:var(--green-bg);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.bdead{background:var(--gray-bg);color:var(--gray);border:1px solid rgba(107,114,128,.25)}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:11.5px}
+th{background:var(--surface2);color:var(--text2);font-weight:600;padding:10px 10px;text-align:left;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1;font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+th:first-child{border-radius:8px 0 0 0}th:last-child{border-radius:0 8px 0 0}
+td{padding:8px 10px;border-bottom:1px solid rgba(46,52,70,.5);white-space:nowrap;color:var(--text)}
+tr.sub-sku{transition:background .1s}
+tr.sub-sku:hover{background:var(--accent-bg)}
+.stock0{color:var(--red);font-weight:700}
+.product-row{background:var(--surface3);font-weight:600}
+.product-row td{border-bottom:1px solid var(--border);padding:10px 10px;font-size:12px;color:var(--text)}
+.collapse-btn{cursor:pointer;user-select:none;font-size:12px;margin-right:4px;color:var(--accent2);transition:color .15s}
+.collapse-btn:hover{color:var(--accent)}
+.tw{overflow-x:auto;max-height:640px;overflow-y:auto;border-radius:8px;border:1px solid var(--border)}
+.tw::-webkit-scrollbar{width:6px;height:6px}
+.tw::-webkit-scrollbar-track{background:var(--surface)}
+.tw::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+.tw::-webkit-scrollbar-thumb:hover{background:var(--border)}
+.count{font-size:10.5px;color:var(--text3);margin-left:8px}
+.summary-bar{background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(124,58,237,.06));border:1px solid rgba(99,102,241,.2);border-radius:10px;padding:12px 20px;margin-bottom:14px;font-size:13px;display:flex;gap:28px;flex-wrap:wrap;align-items:center;backdrop-filter:blur(8px)}
+.summary-bar span{color:var(--text2);white-space:nowrap}
+.summary-bar strong{color:var(--accent2);font-size:15px;font-weight:700}
+.filter-label{font-size:11px;color:var(--text3);white-space:nowrap}
+.dim-col{color:var(--text3)}
+.days-restock{color:var(--red);font-weight:700}
+.days-overstock{color:var(--gray);font-weight:600}
+.days-ok{color:var(--green)}
 </style>
 </head>
 <body>
@@ -95,14 +126,14 @@ function wS(s){return Object.entries(s||{}).filter(e=>e[0]>='2026-04-01').reduce
 // KPI
 (function(){
   let h='';
-  [['DE','德国'],['UK','英国']].forEach(([c,lb])=>{
+  [['DE','德国','de-kpi'],['UK','英国','uk-kpi']].forEach(([c,lb,cls])=>{
     const skus=D.skus[c]||{};
     const total=Object.keys(skus).length;
     const z0=Object.values(skus).filter(s=>(s.in_stock||0)===0).length;
     const hs=Object.values(skus).filter(s=>wS(s.sales)>0).length;
-    const cls=z0>10?'danger':z0>5?'warn':'ok';
-    h+=`<div class="kpi"><div class="l">${lb} SKU总数</div><div class="v">${total}</div><div class="s ${cls}">在库=0: ${z0}</div></div>`;
-    h+=`<div class="kpi"><div class="l">${lb} 有销量SKU</div><div class="v">${hs}</div><div class="s ok">${(hs/total*100||0).toFixed(0)}%</div></div>`;
+    const cls2=z0>10?'danger':z0>5?'warn':'ok';
+    h+=`<div class="kpi ${cls}"><div class="l">${lb} SKU总数</div><div class="v">${total}</div><div class="s ${cls2}">在库=0: ${z0}</div></div>`;
+    h+=`<div class="kpi ${cls}"><div class="l">${lb} 有销量SKU</div><div class="v">${hs}</div><div class="s ok">${(hs/total*100||0).toFixed(0)}%</div></div>`;
   });
   document.getElementById('kpi').innerHTML=h;
 })();
@@ -249,10 +280,10 @@ function renderTable(){
       const avg7=dailyAvg7(info);
       const days=daysOfStock(info);
       const st=statusOf(info);
-      const volInProdDisplay=info.total_volume_in_prod?fmtVol(info.total_volume_in_prod):'<span style="color:#ccc">0</span>';
-      const volDisplay=info.volume?fmtVol(info.volume):'<span style="color:#ccc">0</span>';
+      const volInProdDisplay=info.total_volume_in_prod?fmtVol(info.total_volume_in_prod):'<span class="dim-col">0</span>';
+      const volDisplay=info.volume?fmtVol(info.volume):'<span class="dim-col">0</span>';
       const daysDisplay=days>=999?'-':(days===0?'0':days);
-      const daysColor=st==='需补货'?'stock0':(st==='滞销'?'color:#888;font-weight:700':'');
+      const daysColor=st==='需补货'?'days-restock':(st==='滞销'?'days-overstock':'days-ok');
       html+=`<tr class="sub-sku">
         <td></td>
         <td><strong>${info.sku_code}</strong></td>
