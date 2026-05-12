@@ -60,7 +60,7 @@ tr:hover{background:#f8faff}
   <div class="filters" id="filters">
     <input type="text" id="fSearch" placeholder="搜索SKU/产品名/工厂...">
     <select id="fFactory"><option value="">全部工厂</option></select>
-    <select id="fStatus"><option value="">全部状态</option><option value="断货">断货</option><option value="紧张">紧张</option><option value="滞销">滞销</option><option value="在产中">在产中</option><option value="正常">正常</option></select>
+    <select id="fStatus"><option value="">全部状态</option><option value="需补货">需补货</option><option value="滞销">滞销</option><option value="正常">正常</option></select>
     <select id="fProduct"><option value="">全部产品</option></select>
     <select id="fLogistics"><option value="">全部物流</option></select>
     <span class="filter-label">在产数量:</span>
@@ -132,19 +132,29 @@ function populateFilters(){
   fL.innerHTML='<option value="">全部物流</option>'+logistics.map(l=>`<option value="${l}">${l}</option>`).join('');
 }
 
+function dailyAvg7(info){
+  const sales=info.sales||{};
+  const dates=Object.keys(sales).filter(d=>d>='2026-05-05'&&d<='2026-05-11').sort();
+  const total=dates.reduce((a,d)=>a+(sales[d]||0),0);
+  return dates.length>0?total/7:0;
+}
+
+function daysOfStock(info){
+  const st=info.in_stock||0;
+  const avg=dailyAvg7(info);
+  if(avg<=0) return st>0?999:0;
+  return Math.round(st/avg);
+}
+
 function statusOf(info){
-  const st=info.in_stock||0,tr=info.in_transit||0,prod=info.in_production||0,rec=wS(info.sales);
-  if(st===0&&rec>0) return '断货';
-  if(st===0&&tr===0&&prod>0) return '在产中';
-  if(st>0&&rec>0&&(st+tr)/rec<2) return '紧张';
-  if(st>=30&&rec===0) return '滞销';
+  const days=daysOfStock(info);
+  if(days<120) return '需补货';
+  if(days>180) return '滞销';
   return '正常';
 }
 
 function badgeOf(status){
-  if(status==='断货') return '<span class="badge bd">断货</span>';
-  if(status==='紧张') return '<span class="badge bw">紧张</span>';
-  if(status==='在产中') return '<span class="badge bw">在产中</span>';
+  if(status==='需补货') return '<span class="badge bd">需补货</span>';
   if(status==='滞销') return '<span class="badge bdead">滞销</span>';
   return '<span class="badge bo">正常</span>';
 }
@@ -216,7 +226,7 @@ function renderTable(){
   html+='<th>库存SKU</th><th>品名</th><th>采购价</th><th>工厂</th>';
   html+='<th>在产</th><th>在途</th><th>在库</th>';
   html+='<th>长</th><th>宽</th><th>高</th><th>毛重</th><th>围长</th><th>体积(m³)</th><th>在产总体积(m³)</th>';
-  html+='<th>物流渠道</th><th>快递费</th><th>1-4月</th><th>近30天</th><th>库存月数</th><th>状态</th>';
+  html+='<th>物流渠道</th><th>快递费</th><th>1-4月</th><th>近7天日均</th><th>可售天数</th><th>状态</th>';
   html+='</tr></thead><tbody>';
 
   if(sortedProducts.length===0){
@@ -236,12 +246,13 @@ function renderTable(){
     </tr>`;
 
     for(const info of items){
-      const rec=wS(info.sales);
-      const total_s=(info.in_stock||0)+(info.in_transit||0);
-      const ms=rec>0?Math.round(total_s/rec*10)/10:999;
+      const avg7=dailyAvg7(info);
+      const days=daysOfStock(info);
       const st=statusOf(info);
       const volInProdDisplay=info.total_volume_in_prod?fmtVol(info.total_volume_in_prod):'<span style="color:#ccc">0</span>';
       const volDisplay=info.volume?fmtVol(info.volume):'<span style="color:#ccc">0</span>';
+      const daysDisplay=days>=999?'-':(days===0?'0':days);
+      const daysColor=st==='需补货'?'stock0':(st==='滞销'?'color:#888;font-weight:700':'');
       html+=`<tr class="sub-sku">
         <td></td>
         <td><strong>${info.sku_code}</strong></td>
@@ -258,8 +269,8 @@ function renderTable(){
         <td>${info.logistics||''}</td>
         <td>${info.express_fee||''}</td>
         <td>${info.jan_apr_sales||0}</td>
-        <td>${rec.toFixed(1)}</td>
-        <td>${ms>=999?'-':ms}</td>
+        <td>${avg7.toFixed(1)}</td>
+        <td class="${daysColor}">${daysDisplay}</td>
         <td>${badgeOf(st)}</td>
       </tr>`;
     }
